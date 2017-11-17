@@ -5,59 +5,76 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
   </head>
   <body>
-    <svg width="500" height="500">
+    <svg width='500' height='500'>
     </svg>
 
-    <script type="text/javascript">
-            var margin = {top: 30, right: 30, bottom: 30, left: 30};
-            var width = 500- margin.left - margin.right;
-            var height = 500 - margin.top - margin.bottom;
+    <script type='text/javascript'>
+        var margin = {top: 30, right: 30, bottom: 30, left: 30};
+        var width = 500- margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
 
-            //dados
-            var dataset = [['LB', 4.68, 'Erick José Santos do Monte', 4.87], ['LB', 5.28, 'Ramsés Ferraz Ribeiro de Melo', 5.57], ['LB', 4.56, 'Iuri Andrei Carneiro Perrier', 5.18], ['LB', 4.93, 'Thiago Alessandro Santos Lucas da Silva', 4.5], ['LB', 5.48, 'José Anderson Alves De Lima Pereira', 5.63], ['LB', 5.9, 'Osvaldo José', 6.13]];
-            
-            //Escalas
-            var dataXinterval = [0,7];
-            var xScale = d3.scaleLinear().domain(dataXinterval).range([0, width-margin.left]);
+        //Dados
+        var dataset = [['LB', 4.68, 'Erick José Santos do Monte', 4.87], ['LB', 5.28, 'Ramsés Ferraz Ribeiro de Melo', 5.57], ['LB', 4.56, 'Iuri Andrei Carneiro Perrier', 5.18], ['LB', 4.93, 'Thiago Alessandro Santos Lucas da Silva', 4.5], ['LB', 5.48, 'José Anderson Alves De Lima Pereira', 5.63], ['LB', 5.9, 'Osvaldo José', 6.13]];
+        
+        //Escalas
+        var dataXinterval = [0,7];
+        var xScale = d3.scaleLinear().domain(dataXinterval).range([0, width-margin.left]);
 
-            var dataYinterval = d3.extent(dataset, d=>d[0]);
-            var yScale = d3.scaleOrdinal().domain(dataYinterval).range([0,height-margin.top]);
-
-            var mySVG = d3.select("svg")
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            //scatterplots
-            mySVG
-            .selectAll("circle")
-            .data(dataset)
-            .enter()
-            .append("circle")
-            .attr("cx",d=>xScale(d[1]))
-            .attr("cy",d=>yScale(d[0]))
-            .attr("r",5);
-
-            var xAxisGroup = mySVG.append("g")
-                                       .attr("class","xAxis")
-                                       .attr("transform","translate(0,"+(height-margin.top)+")");
-            var xAxis = d3.axisBottom(xScale);
-            xAxisGroup.call(xAxis);
+        var dataYinterval = d3.extent(dataset, d=>d[0]);
+        var yScale = d3.scaleOrdinal().domain(dataYinterval).range([0,height-margin.top]);
 
 
-            var yAxisGroup = mySVG.append("g")
-                                       .attr("class","yAxis")
-                                       .attr("transform","translate(0, 0)");
-            var yAxis = d3.axisLeft(yScale);
-            yAxisGroup.call(yAxis);
+        var mySVG = d3.select('svg')
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-            mySVG.selectAll("circle")
-                .on("mouseover",function(d){
-                d3.select(this).attr('fill', 'red');
-                });
-            mySVG.selectAll("circle")
-                .on("mouseout",function(d){
-                d3.select(this).attr('fill', 'black');
-                });
+        //scatterplots
+        mySVG
+        .selectAll()
+        .data(dataset)
+        .enter()
+        .append('g')
+        .attr('Class', d=>d[2])
+        .append('circle')
+        .attr("cx",d=>xScale(d[1]))
+        .attr("cy",d=>yScale(d[0]))
+        .attr("r",5);
+
+        mySVG
+        .selectAll('g')
+        .append('text')
+        .text(d=>d[2])
+        .attr('x', d=>xScale(d[1]))
+        .attr('y', d=>yScale(d[0])-5)
+        .attr('display', 'none');
+
+
+        var xAxisGroup = mySVG.append('g')
+                                   .attr('class','xAxis')
+                                   .attr('transform','translate(0,'+(height-margin.top)+')');
+        var xAxis = d3.axisBottom(xScale);
+        xAxisGroup.call(xAxis);
+
+
+        var yAxisGroup = mySVG.append('g')
+                                   .attr('class','yAxis')
+                                   .attr('transform','translate(0, 0)');
+        var yAxis = d3.axisLeft(yScale);
+        yAxisGroup.call(yAxis);
+
+        
+        mySVG.selectAll('g')
+            .on('mouseover',function(d){
+            d3.select(this).select('circle').attr('fill', 'red');
+            d3.select(this).select('text').attr('display', 'true');
+            });
+        
+        mySVG.selectAll('g')
+            .on('mouseout',function(d){
+            d3.select(this).select('circle').attr('fill', 'black');
+            d3.select(this).select('text').attr('display', 'none');
+            });
+
 
     </script>
   </body>
