@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.bar {
+  fill: #005033;
+}
+
+.bar:hover {
+  fill: grey;
+}
+
+.medbar{
+	fill: grey;
+}
+
+.medbar:hover{
+	fill: #005033;	
+}
+
+.infbar{
+	fill:white;
+}
+
+.infbar:hover{
+	fill:grey;
+}
+
+.axis--x path {
+  display: none;
+}
+
+</style>
+<svg width="960" height="500"></svg>
+<script src="D3/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom;
+
+var x = d3.scaleBand().rangeRound([0, width]).padding(0.3),
+    y = d3.scaleLinear().rangeRound([height, 0]);
+
+var g = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("40yd_average.tsv", function(d) {
+  d.avg40 = +d.avg40;
+  d.mediana = +d.mediana;
+  d.limite_inferior = +d.limite_inferior;
+  return d;
+}, function(error, data) {
+  if (error) throw error;
+
+  console.log(data);
+
+  x.domain(data.map(function(d) { return d.posicao; }));
+  y.domain([4, d3.max(data, function(d) { return d.avg40; })]);
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3.axisLeft(y))
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Média");
+
+  g.selectAll(".bar")
+    .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.posicao); })
+      .attr("y", function(d) { return y(d.avg40); })
+      .attr("width", x.bandwidth())
+      .attr("height", function(d) { return height - y(d.avg40); });
+
+  g.selectAll(".medbar")
+    .data(data)
+    .enter().append("rect")
+      .attr("class", "medbar")
+      .attr("x", function(d) { return x(d.posicao); })
+      .attr("y", function(d) { return y(d.mediana); })
+      .attr("width", x.bandwidth())
+      .attr("height", 5);
+
+  g.selectAll(".infbar")
+    .data(data)
+    .enter().append("rect")
+      .attr("class", "infbar")
+      .attr("x", function(d) { return x(d.posicao); })
+      .attr("y", function(d) { return y(d.limite_inferior); })
+      .attr("width", x.bandwidth())
+      .attr("height", 5);
+});
+
+</script>
